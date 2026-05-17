@@ -4,7 +4,7 @@ import JobForm from "./components/JobForm.jsx";
 import CandidateList from "./components/CandidateList.jsx";
 import ShortlistedResult from "./components/ShortlistedResult.jsx";
 
-const API = "https://candidate-system-852a.onrender.com";;
+const API = "https://candidate-system-852a.onrender.com";
 
 export default function App() {
   const [tab, setTab] = useState("match");
@@ -19,17 +19,21 @@ export default function App() {
     setCandidates(data);
   };
 
-  useEffect(() => { fetchCandidates(); }, []);
+  useEffect(() => {
+    fetchCandidates();
+  }, []);
 
   const handleMatch = async (jobData, useAI) => {
     setLoading(true);
     setAiResult("");
+
     try {
       const res = await fetch(`${API}/api/match`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(jobData),
       });
+
       const data = await res.json();
       setResults(data);
 
@@ -39,12 +43,14 @@ export default function App() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(jobData),
         });
+
         const aiData = await aiRes.json();
         setAiResult(aiData.result || aiData.error);
       }
     } catch (e) {
       console.error(e);
     }
+
     setLoading(false);
   };
 
@@ -55,46 +61,70 @@ export default function App() {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--bg)" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(to right, #f4f7fb, #eef2ff)",
+      }}
+    >
       {/* Header */}
-      <header style={{
-        borderBottom: "1px solid var(--border)",
-        padding: "20px 40px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        background: "var(--surface)",
-      }}>
+      <header
+        style={{
+          padding: "18px 40px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          background: "#ffffff",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+          position: "sticky",
+          top: 0,
+          zIndex: 100,
+        }}
+      >
         <div>
-          <h1 style={{
-            fontFamily: "var(--font-head)",
-            fontSize: "1.8rem",
-            fontWeight: 800,
-            background: "linear-gradient(135deg, #6c63ff, #ff6584)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-          }}>
+          <h1
+            style={{
+              fontSize: "2rem",
+              fontWeight: "bold",
+              color: "#4f46e5",
+              margin: 0,
+            }}
+          >
             TalentAI
           </h1>
-          <p style={{ color: "var(--muted)", fontSize: "0.8rem", marginTop: 2 }}>
+
+          <p
+            style={{
+              color: "#64748b",
+              fontSize: "0.9rem",
+              marginTop: "4px",
+            }}
+          >
             AI-Powered Candidate Shortlisting
           </p>
         </div>
-        <div style={{ display: "flex", gap: "6px" }}>
+
+        <div style={{ display: "flex", gap: "10px" }}>
           {tabs.map((t) => (
-            <button key={t.id} onClick={() => setTab(t.id)} style={{
-              padding: "8px 18px",
-              borderRadius: "8px",
-              border: "1px solid",
-              borderColor: tab === t.id ? "var(--accent)" : "var(--border)",
-              background: tab === t.id ? "var(--accent)" : "transparent",
-              color: "var(--text)",
-              cursor: "pointer",
-              fontFamily: "var(--font-body)",
-              fontSize: "0.85rem",
-              fontWeight: tab === t.id ? 600 : 400,
-              transition: "all 0.2s",
-            }}>
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              style={{
+                padding: "10px 18px",
+                borderRadius: "10px",
+                border: "none",
+                background: tab === t.id ? "#4f46e5" : "#ffffff",
+                color: tab === t.id ? "#ffffff" : "#334155",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: "500",
+                boxShadow:
+                  tab === t.id
+                    ? "0 4px 12px rgba(79,70,229,0.25)"
+                    : "0 2px 6px rgba(0,0,0,0.05)",
+                transition: "0.3s",
+              }}
+            >
               {t.label}
             </button>
           ))}
@@ -102,10 +132,17 @@ export default function App() {
       </header>
 
       {/* Main */}
-      <main style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 20px" }}>
+      <main
+        style={{
+          maxWidth: "1100px",
+          margin: "0 auto",
+          padding: "40px 20px",
+        }}
+      >
         {tab === "add" && (
           <AddCandidate API={API} onAdded={fetchCandidates} />
         )}
+
         {tab === "all" && (
           <CandidateList
             candidates={candidates}
@@ -113,11 +150,16 @@ export default function App() {
             onDeleted={fetchCandidates}
           />
         )}
+
         {tab === "match" && (
           <>
             <JobForm onMatch={handleMatch} loading={loading} />
+
             {(results.length > 0 || aiResult) && (
-              <ShortlistedResult results={results} aiResult={aiResult} />
+              <ShortlistedResult
+                results={results}
+                aiResult={aiResult}
+              />
             )}
           </>
         )}
